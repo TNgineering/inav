@@ -50,8 +50,8 @@
 #include "drivers/serial_softserial.h"
 #include "drivers/serial_uart.h"
 #include "drivers/system.h"
-#include "drivers/accgyro.h"
-#include "drivers/compass.h"
+#include "drivers/accgyro/accgyro.h"
+#include "drivers/compass/compass.h"
 #include "drivers/pwm_mapping.h"
 #include "drivers/pwm_output.h"
 #include "drivers/pwm_rx.h"
@@ -495,10 +495,6 @@ void init(void)
     mspFcInit();
     mspSerialInit();
 
-#if defined(USE_MSP_DISPLAYPORT) && defined(CMS)
-    cmsDisplayPortRegister(displayPortMspInit());
-#endif
-
 #ifdef USE_CLI
     cliInit(serialConfig());
 #endif
@@ -511,6 +507,10 @@ void init(void)
     if (feature(FEATURE_OSD)) {
         osdInit();
     }
+#endif
+
+#if defined(USE_MSP_DISPLAYPORT) && defined(CMS)
+    cmsDisplayPortRegister(displayPortMspInit());
 #endif
 
 #ifdef GPS
@@ -578,7 +578,7 @@ void init(void)
 #endif
 
 #ifdef BLACKBOX
-    initBlackbox();
+    blackboxInit();
 #endif
 
     gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
