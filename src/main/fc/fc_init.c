@@ -226,10 +226,6 @@ void init(void)
 
     timerInit();  // timer must be initialized before any channel is allocated
 
-#if !defined(USE_HAL_DRIVER)
-    dmaInit();
-#endif
-
 #if defined(AVOID_UART2_FOR_PWM_PPM)
     serialInit(feature(FEATURE_SOFTSERIAL),
             feature(FEATURE_RX_PPM) || feature(FEATURE_RX_PARALLEL_PWM) ? SERIAL_PORT_USART2 : SERIAL_PORT_NONE);

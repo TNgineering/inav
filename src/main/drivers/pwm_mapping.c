@@ -166,32 +166,32 @@ pwmIOConfiguration_t *pwmInit(drv_pwm_config_t *init)
         if (init->useSerialRx) {
             type = MAP_TO_NONE;
         }
-        else if (init->useParallelPWM && (timerHardwarePtr->mapping & TIM_USE_PWM)) {
+        else if (init->useParallelPWM && (timerHardwarePtr->usageFlags & TIM_USE_PWM)) {
             type = MAP_TO_PWM_INPUT;
         }
-        else if (init->usePPM && (timerHardwarePtr->mapping & TIM_USE_PPM)) {
+        else if (init->usePPM && (timerHardwarePtr->usageFlags & TIM_USE_PPM)) {
             type = MAP_TO_PPM_INPUT;
         }
 
-        // Handle outputs
+        // Handle outputs - may override the PWM/PPM inputs
         if (init->airplane) {
             // Fixed wing
-            if (timerHardwarePtr->mapping & TIM_USE_FW_SERVO) {
+            if (timerHardwarePtr->usageFlags & TIM_USE_FW_SERVO) {
                 type = MAP_TO_SERVO_OUTPUT;
             }
-            else if (timerHardwarePtr->mapping & TIM_USE_FW_MOTOR) {
+            else if (timerHardwarePtr->usageFlags & TIM_USE_FW_MOTOR) {
                 type = MAP_TO_MOTOR_OUTPUT;
             }
         }
         else {
             // Multicopter
-            if (init->useServos && (timerHardwarePtr->mapping & TIM_USE_MC_SERVO)) {
+            if (init->useServos && (timerHardwarePtr->usageFlags & TIM_USE_MC_SERVO)) {
                 type = MAP_TO_SERVO_OUTPUT;
             }
-            else if (init->useChannelForwarding && (timerHardwarePtr->mapping & TIM_USE_MC_CHNFW)) {
+            else if (init->useChannelForwarding && (timerHardwarePtr->usageFlags & TIM_USE_MC_CHNFW)) {
                 type = MAP_TO_SERVO_OUTPUT;
             }
-            else if (timerHardwarePtr->mapping & TIM_USE_MC_MOTOR) {
+            else if (timerHardwarePtr->usageFlags & TIM_USE_MC_MOTOR) {
                 type = MAP_TO_MOTOR_OUTPUT;
             }
         }
@@ -229,12 +229,6 @@ pwmIOConfiguration_t *pwmInit(drv_pwm_config_t *init)
 #if defined(SPARKY)
             // remap PWM1+2 as servos
             if ((timerIndex == PWM1 || timerIndex == PWM2) && timerHardwarePtr->tim == TIM15)
-                type = MAP_TO_SERVO_OUTPUT;
-#endif
-
-#if defined(SPRACINGF3)
-            // remap PWM15+16 as servos
-            if ((timerIndex == PWM15 || timerIndex == PWM16) && timerHardwarePtr->tim == TIM15)
                 type = MAP_TO_SERVO_OUTPUT;
 #endif
 
@@ -307,12 +301,6 @@ pwmIOConfiguration_t *pwmInit(drv_pwm_config_t *init)
                   type = MAP_TO_SERVO_OUTPUT;
                 }
             } else
-#endif
-
-#if defined(SPRACINGF3) || defined(NAZE)
-                // remap PWM5..8 as servos when used in extended servo mode
-                if (timerIndex >= PWM5 && timerIndex <= PWM8)
-                    type = MAP_TO_SERVO_OUTPUT;
 #endif
 
 #if defined(SPRACINGF3EVO)
